@@ -1,0 +1,32 @@
+{
+  "examples/backend/resources/users/user.entities.ts": {
+    "lastModified": 1717308035745.259,
+    "path": "examples/backend/resources/users/user.entities.ts",
+    "type": "typing",
+    "name": "user.entities.ts"
+  },
+  "examples/backend/resources/users/dto/user.dto.ts": {
+    "lastModified": 1717311047849.9795,
+    "path": "examples/backend/resources/users/dto/user.dto.ts",
+    "type": "typing",
+    "name": "user.dto.ts"
+  },
+  "examples/backend/resources/users/controllers/user.controllers.ts": {
+    "lastModified": 1717295092554.716,
+    "path": "examples/backend/resources/users/controllers/user.controllers.ts",
+    "type": "controller",
+    "name": "user.controllers.ts"
+  },
+  "examples/backend/resources/auth/auth.controller.ts": {
+    "lastModified": 1717319100603.3594,
+    "path": "examples/backend/resources/auth/auth.controller.ts",
+    "type": "controller",
+    "name": "auth.controller.ts"
+  },
+  "examples/backend/resources/auth/dto/auth.dtos.ts": {
+    "lastModified": 1717318992321.2068,
+    "path": "examples/backend/resources/auth/dto/auth.dtos.ts",
+    "type": "typing",
+    "name": "auth.dtos.ts"
+  }
+}
