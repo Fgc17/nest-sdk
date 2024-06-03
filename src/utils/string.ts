@@ -6,11 +6,16 @@ export function AwaitTypeText(inputString: string) {
   return match ? match[1] : inputString;
 }
 
-export function unquotify(str) {
+export function unquotify(str?: string): string {
+  console.log(str);
+  if (!str) return "";
+
   return str.replace(/['"`]/g, "");
 }
 
-export function trimSlashes(str: string) {
+export function trimSlashes(str?: string): string {
+  if (!str) return "";
+
   return str.replace(/^\/|\/$/g, "");
 }
 
@@ -66,4 +71,13 @@ export function generateImportStatement(
     ", "
   )} } from "${from}";`;
   return importStatement;
+}
+
+export function countOccurrences(str: string, substr: string): number {
+  if (substr.length === 0) return 0;
+
+  const regex = new RegExp(substr, "g");
+  const matches = str.match(regex);
+
+  return matches ? matches.length : 0;
 }

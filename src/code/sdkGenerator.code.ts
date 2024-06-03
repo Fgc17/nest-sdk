@@ -17,7 +17,7 @@ export function generateSDKClient(config: SdkClientConfig) {
   >(
     module: M,
     method: R,
-    args: Omit<SdkRoutesTypes[M][R], "response"> & {
+    args?: Omit<SdkRoutesTypes[M][R], "response"> & {
       headers?: Record<string, string>;
     }
   ) {

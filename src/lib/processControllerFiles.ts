@@ -4,7 +4,7 @@ import { getRoutesInfo } from "./getRoutesInfo";
 
 export function processControllerFiles(
   project: Project,
-  modulesControllers: any
+  modulesControllers: Record<string, string[]>
 ) {
   const controllerFiles = project.getSourceFiles(
     CachedFilesPatternRecord.controller
@@ -22,7 +22,7 @@ export function processControllerFiles(
     {}
   );
 
-  const sdkRoutes = Object.entries(modulesControllers).reduce(
+  const sdkRoutes: Record<string, Record<string, RouteInfo>> = Object.entries(modulesControllers).reduce(
     (acc, [module, controllers]) => {
       const moduleRoutes = controllers.reduce((acc, controller) => {
         const routes = controllerRoutes[controller]?.reduce((acc, route) => {
@@ -45,9 +45,9 @@ export function processControllerFiles(
     {}
   );
 
-  const sdkRoutesTypes = Object.entries(sdkRoutes).reduce(
+  const sdkRoutesTypes: Record<string, Record<string, RouteInfo['types']>> = Object.entries(sdkRoutes).reduce(
     (acc, [module, routes]) => {
-      const moduleRoutes = Object.entries(routes as any).reduce(
+      const moduleRoutes = Object.entries(routes).reduce(
         (acc, [route, { types }]) => {
           return {
             ...acc,
@@ -65,9 +65,9 @@ export function processControllerFiles(
     {}
   );
 
-  const sdkRoutesData = Object.entries(sdkRoutes).reduce(
+  const sdkRoutesData: Record<string, Record<string, Omit<RouteInfo, 'types'>>> = Object.entries(sdkRoutes).reduce(
     (acc, [module, routes]) => {
-      const moduleRoutes = Object.entries(routes as any).reduce(
+      const moduleRoutes = Object.entries(routes).reduce(
         (acc, [route, { url, httpOperation }]) => {
           return {
             ...acc,

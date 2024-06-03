@@ -1,4 +1,4 @@
-import { SourceFile } from "ts-morph";
+import { SourceFile, TypeFormatFlags } from "ts-morph";
 import { RouteInfo } from "..";
 import { getPureType } from "../utils/morph";
 import {
@@ -39,11 +39,12 @@ export function getRoutesInfo(controller: SourceFile): RouteInfo[] {
         body: getPureType(parameters.find((p) => p.getDecorator("Body"))),
         query: getPureType(parameters.find((p) => p.getDecorator("Query"))),
         params: paramDecorators.length ? reqParams : undefined,
-        response: AwaitTypeText(
-          resolveNodemodules(
-            resolveTypedObjects(method.getReturnType().getText())
-          )
-        ),
+        response: method
+          .getType()
+          .getText(
+            null as any,
+            TypeFormatFlags.UseSingleQuotesForStringLiteralType
+          ),
       },
       methodName: method.getName(),
       httpOperation: httpOperation,

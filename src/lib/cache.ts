@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { glob } from "glob";
 import GlobToRegExp from "glob-to-regexp";
+import { CachedFilesPatternRecord } from "..";
 
 export type FileType = "controller" | "typing" | "additionalCode";
 
@@ -15,12 +16,6 @@ export interface FileMetadata {
 export interface FileCache {
   [key: string]: FileMetadata;
 }
-
-export const CachedFilesPatternRecord: Record<FileType, string> = {
-  typing: `**/{*.enums,*.enum,*.model,*.models,*.entities,*.entity,*.dto,*.dtos}.ts`,
-  controller: "**/{*.controller,*.controllers}.ts",
-  additionalCode: "**/additional-code.ts",
-};
 
 export function getModifiedFiles(
   projectFilesPaths: string[],

@@ -1,17 +1,17 @@
 import GlobToRegExp from "glob-to-regexp";
 import { SourceFile, SyntaxKind } from "ts-morph";
 import { CachedFilesPatternRecord } from "..";
+import { countOccurrences } from "../utils/string";
 
 export function getTypingFilesData(typingFiles: SourceFile[]) {
   return typingFiles.map((f) => {
-    let removedDecorators: string[] = [];
-
     f.getDescendantsOfKind(SyntaxKind.Decorator).forEach((decorator) => {
-      removedDecorators.push(decorator.getName());
       decorator.remove();
     });
 
     let additionalCodeImports: string[] = [];
+
+    const fileText = f.getFullText();
 
     f.getImportDeclarations().forEach((importDeclaration) => {
       const importPath = importDeclaration.getModuleSpecifierValue();
@@ -27,7 +27,6 @@ export function getTypingFilesData(typingFiles: SourceFile[]) {
         importDeclaration.setModuleSpecifier(
           "./" + importPath.split("/").pop()!.replace(".ts", "")
         );
-
         return;
       }
 
@@ -37,7 +36,7 @@ export function getTypingFilesData(typingFiles: SourceFile[]) {
           .map((i) => {
             const importName = i.getName();
 
-            if (removedDecorators.includes(importName)) return "";
+            if (countOccurrences(fileText, importName) === 1) return "";
 
             return importName;
           })
@@ -49,7 +48,7 @@ export function getTypingFilesData(typingFiles: SourceFile[]) {
 
     if (additionalCodeImports.length) {
       f.addImportDeclaration({
-        moduleSpecifier: "./additional-code",
+        moduleSpecifier: "../additional-code",
         namedImports: additionalCodeImports,
       });
     }

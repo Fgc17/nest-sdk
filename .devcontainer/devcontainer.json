@@ -4,7 +4,6 @@
     "service": "app",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "initializeCommand": "ls",
-    "forwardPorts": [1212, 1213, 1214, 3000, 4000, 5000, 6000, 7000, 8080],
     "customizations": {
       "vscode": {
         "extensions": [

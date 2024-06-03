@@ -11,8 +11,9 @@ import { processTypingFiles } from "./lib/processTypingFiles";
 
 export interface SDKGeneratorConfig {
   apiUrl: string;
-  additionalCode?: string;
   dist: string;
+  additionalCode?: string;
+  tsconfig?: string;
 }
 
 export interface RouteInfo {
@@ -43,7 +44,7 @@ export interface FileCache {
 export const CachedFilesPatternRecord: Record<FileType, string> = {
   typing: `**/{*.enums,*.enum,*.model,*.models,*.entities,*.entity,*.dto,*.dtos}.ts`,
   controller: "**/{*.controller,*.controllers}.ts",
-  additionalCode: "**/additional-code.ts",
+  additionalCode: "**/sdk-additional_code.ts",
 };
 
 export function generateSdk(config: SDKGeneratorConfig): void {
@@ -79,12 +80,28 @@ export function generateSdk(config: SDKGeneratorConfig): void {
   );
 
   const project = new Project({
-    tsConfigFilePath: "examples/backend/tsconfig.json",
+    tsConfigFilePath: config.tsconfig ?? "tsconfig.json",
   });
+
+  const modifiedAdditionalCodeFiles = modifiedFiles.filter(
+    (file) => file.type === "additionalCode"
+  );
+
+  if (modifiedAdditionalCodeFiles.length) {
+    const additionalCode = modifiedAdditionalCodeFiles
+      .map((file) => ensureFileRead(file.path))
+      .join("\n");
+
+    ensureFileWrite(
+      path.join(trimSlashes(config.dist), "additional-code.ts"),
+      additionalCode
+    );
+  }
 
   const modifiedTypingFiles = modifiedFiles.filter(
     (file) => file.type === "typing"
   );
+
   const modifiedControllerFiles = modifiedFiles.filter(
     (file) => file.type === "controller"
   );
@@ -103,9 +120,11 @@ export function generateSdk(config: SDKGeneratorConfig): void {
   const modulesControllers: { [key: string]: string[] } = moduleFiles.reduce(
     (acc, moduleFile) => {
       const module = moduleFile.getClasses()[0];
+
       const moduleObject = module
         ?.getDecorator("Module")
         ?.getArguments()[0] as any;
+
       const controllers = moduleObject
         .getProperty("controllers")
         ?.getText()
@@ -113,6 +132,9 @@ export function generateSdk(config: SDKGeneratorConfig): void {
         ?.split("]")[0]
         ?.split(",")
         .flatMap((c) => c.trim())!;
+
+      if (!controllers) return acc;
+
       const moduleKey = module?.getName()!.toLowerCase().replace("module", "")!;
       return {
         ...acc,
@@ -135,7 +157,7 @@ export function generateSdk(config: SDKGeneratorConfig): void {
         .map(
           ([module, routes]) => `
         ${module}: {
-          ${Object.entries(routes as any)
+          ${Object.entries(routes)
             .map(
               ([route, types]) => `
             ${route}: {
@@ -159,7 +181,7 @@ export function generateSdk(config: SDKGeneratorConfig): void {
         .map(
           ([module, routes]) => `
         ${module}: {
-          ${Object.entries(routes as any)
+          ${Object.entries(routes)
             .map(
               ([route, { url, httpOperation }]) => `
             ${route}: {
